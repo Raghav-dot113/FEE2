@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>I'll Fix One Bug Before Sleeping</title>
+<style>
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    background-color: #121212;
+    color: #f1f1f1;
+    font-family: 'Trebuchet MS', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    background-image: radial-gradient(#2a2a2a 1px, transparent 1px);
+    background-size: 25px 25px;
+  }
+
+  #bugCheckbox, .coffeeBox {
+    display: none;
+  }
+
+  .container {
+    max-width: 500px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .card {
+    background-color: #1e1e1e;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+  }
+
+  .schedule {
+    font-size: 18px;
+    line-height: 1.6;
+  }
+
+  .before-click {
+    display: block;
+  }
+
+  .after-click {
+    display: none;
+  }
+
+  .reveal {
+    display: none;
+  }
+
+  #bugCheckbox:checked ~ .container .reveal {
+    display: block;
+  }
+
+  .programmer-area {
+    position: relative;
+    height: 180px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .bed {
+    font-size: 70px;
+  }
+
+  .programmer-face {
+    font-size: 50px;
+    position: absolute;
+    top: 10px;
+  }
+
+  .single-bug {
+    font-size: 40px;
+    position: absolute;
+    bottom: 10px;
+    right: 30%;
+    animation: floaty 2s ease-in-out infinite;
+  }
+
+  @keyframes floaty {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+  }
+
+  .fix-btn {
+    display: inline-block;
+    background-color: #ff4c4c;
+    color: white;
+    padding: 12px 25px;
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 15px;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+  }
+
+  .fix-btn:hover {
+    animation: wiggle 0.3s ease-in-out;
+    background-color: #ff2e2e;
+  }
+
+  @keyframes wiggle {
+    0% { transform: scale(1.1) rotate(0deg); }
+    25% { transform: scale(1.1) rotate(-3deg); }
+    75% { transform: scale(1.1) rotate(3deg); }
+    100% { transform: scale(1.1) rotate(0deg); }
+  }
+
+  .new-bugs {
+    display: none;
+    position: relative;
+    height: 100px;
+  }
+
+  .new-bug {
+    font-size: 30px;
+    position: absolute;
+    opacity: 0;
+    animation: popIn 0.5s ease forwards, floaty 2s ease-in-out infinite;
+  }
+
+  @keyframes popIn {
+    0% {
+      opacity: 0;
+      transform: scale(0);
+    }
+    70% {
+      opacity: 1;
+      transform: scale(1.2);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .b1 { top: 0px; left: 10px; animation-delay: 0.1s; }
+  .b2 { top: 20px; left: 80px; animation-delay: 0.3s; }
+  .b3 { top: 50px; left: 150px; animation-delay: 0.5s; }
+  .b4 { top: 10px; left: 220px; animation-delay: 0.7s; }
+  .b5 { top: 60px; left: 290px; animation-delay: 0.9s; }
+
+  .new-bug:hover, .single-bug:hover {
+    cursor: pointer;
+    animation-play-state: paused;
+    transform: scale(1.4) rotate(15deg);
+    transition: transform 0.15s ease-in-out;
+  }
+
+  .new-bug::after {
+    content: "squish!";
+    position: absolute;
+    top: -22px;
+    left: -10px;
+    font-size: 12px;
+    color: #7CFC00;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .new-bug:hover::after {
+    opacity: 1;
+  }
+
+  .summary-card {
+    text-align: left;
+  }
+
+  .summary-title {
+    text-align: center;
+    font-size: 22px;
+    margin-bottom: 15px;
+    color: #7CFC00;
+  }
+
+  .summary-line {
+    margin-bottom: 8px;
+    font-size: 16px;
+  }
+
+  #bugCheckbox:checked ~ .container .before-click {
+    display: none;
+  }
+
+  #bugCheckbox:checked ~ .container .after-click {
+    display: block;
+  }
+
+  #bugCheckbox:checked ~ .container .single-bug {
+    display: none;
+  }
+
+  #bugCheckbox:checked ~ .container .new-bugs {
+    display: block;
+  }
+
+  #bugCheckbox:checked ~ .container .normal-face {
+    display: none;
+  }
+
+  #bugCheckbox:checked ~ .container .scared-face {
+    display: inline;
+  }
+
+  .scared-face {
+    display: none;
+  }
+
+  #bugCheckbox:checked ~ .container .fix-btn {
+    background-color: #555;
+  }
+
+  #bugCheckbox:checked ~ .container .reset-hint {
+    display: block;
+  }
+
+  .reset-hint {
+    font-size: 12px;
+    color: #888;
+    margin-top: 8px;
+    display: none;
+  }
+
+  .schedule.after-click span.spooky:hover {
+    color: #ff4c4c;
+    display: inline-block;
+    animation: shake 0.3s ease;
+  }
+
+  @keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-3px); }
+    50% { transform: translateX(3px); }
+    75% { transform: translateX(-3px); }
+    100% { transform: translateX(0); }
+  }
+
+  .terminal {
+    background-color: #000;
+    border-radius: 10px;
+    padding: 15px;
+    text-align: left;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    color: #7CFC00;
+    margin-top: 15px;
+  }
+
+  .terminal p {
+    margin-bottom: 4px;
+  }
+
+  .cursor {
+    display: inline-block;
+    width: 8px;
+    background: #7CFC00;
+    animation: blink 1s steps(1) infinite;
+  }
+
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+
+  .achievement {
+    background-color: #2a2a12;
+    border: 1px solid #d4af37;
+    border-radius: 10px;
+    padding: 10px;
+    margin-top: 15px;
+    font-size: 14px;
+    color: #d4af37;
+    animation: bounceIn 0.6s ease;
+  }
+
+  @keyframes bounceIn {
+    0% { transform: scale(0.5); opacity: 0; }
+    60% { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(1); }
+  }
+
+  .excuse-box {
+    display: none;
+  }
+
+  .excuse-label {
+    display: block;
+    background-color: #292929;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 8px;
+    font-size: 14px;
+    transition: background-color 0.2s ease;
+  }
+
+  .excuse-label:hover {
+    background-color: #3a3a3a;
+  }
+
+  .excuse-answer {
+    max-height: 0;
+    overflow: hidden;
+    background-color: #1a1a1a;
+    border-radius: 0 0 8px 8px;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+    font-size: 13px;
+    color: #bbb;
+    padding: 0 10px;
+  }
+
+  .excuse-box:checked ~ .excuse-answer {
+    max-height: 100px;
+    padding: 10px;
+  }
+
+  .toggle-wrap {
+    margin-top: 15px;
+    font-size: 14px;
+  }
+
+  .toggle-box {
+    display: none;
+  }
+
+  .toggle-switch {
+    display: inline-block;
+    width: 50px;
+    height: 26px;
+    background-color: #555;
+    border-radius: 20px;
+    position: relative;
+    cursor: pointer;
+    vertical-align: middle;
+    transition: background-color 0.3s ease;
+  }
+
+  .toggle-switch::before {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-color: white;
+    border-radius: 50%;
+    top: 3px;
+    left: 3px;
+    transition: left 0.3s ease;
+  }
+
+  .toggle-box:checked ~ .toggle-switch {
+    background-color: #7CFC00;
+  }
+
+  .toggle-box:checked ~ .toggle-switch::before {
+    left: 27px;
+  }
+
+  .toggle-text-bug {
+    margin-left: 8px;
+  }
+
+  .toggle-text-feature {
+    margin-left: 8px;
+    display: none;
+  }
+
+  .toggle-box:checked ~ .toggle-text-bug {
+    display: none;
+  }
+
+  .toggle-box:checked ~ .toggle-text-feature {
+    display: inline;
+  }
+
+  .coffee-counter {
+    margin-top: 10px;
+    font-size: 26px;
+  }
+
+  .cup-label {
+    cursor: pointer;
+    opacity: 0.25;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    display: inline-block;
+  }
+
+  .cup-label:hover {
+    transform: scale(1.2);
+  }
+
+  #cup1:checked ~ .container .lbl1,
+  #cup2:checked ~ .container .lbl2,
+  #cup3:checked ~ .container .lbl3,
+  #cup4:checked ~ .container .lbl4,
+  #cup5:checked ~ .container .lbl5,
+  #cup6:checked ~ .container .lbl6 {
+    opacity: 1;
+  }
+
+  .caffeine-msg {
+    display: none;
+    font-size: 13px;
+    color: #7CFC00;
+    margin-top: 5px;
+  }
+
+  #cup1:checked ~ #cup2:checked ~ #cup3:checked ~ #cup4:checked ~ #cup5:checked ~ #cup6:checked ~ .container .caffeine-msg {
+    display: block;
+  }
+
+  .programmer-face:hover {
+    transform: scale(1.3);
+    transition: transform 0.2s ease;
+    cursor: pointer;
+  }
+
+  @media (max-width: 500px) {
+    .schedule {
+      font-size: 15px;
+    }
+    .programmer-area {
+      height: 150px;
+    }
+  }
+
+</style>
+</head>
+<body>
+
+  <input type="checkbox" id="bugCheckbox">
+
+  <input type="checkbox" class="coffeeBox" id="cup1">
+  <input type="checkbox" class="coffeeBox" id="cup2">
+  <input type="checkbox" class="coffeeBox" id="cup3">
+  <input type="checkbox" class="coffeeBox" id="cup4">
+  <input type="checkbox" class="coffeeBox" id="cup5">
+  <input type="checkbox" class="coffeeBox" id="cup6">
+
+  <div class="container">
+
+    <div class="card">
+      <div class="schedule before-click">
+        10:00 PM 😴 Going to sleep
+      </div>
+
+      <div class="schedule after-click">
+        10 PM 🔧 Fixing bug<br>
+        11 PM 🔧<br>
+        12 AM ☕ Coffee<br>
+        1 AM 😭<br>
+        2 AM <span class="spooky">Still debugging</span><br>
+        3 AM <span class="spooky">Why isn't it working?</span><br>
+        4 AM <span class="spooky">Who wrote this code?</span><br>
+        5 AM Oh... I wrote this.<br>
+        6 AM 💀
+      </div>
+
+      <label for="bugCheckbox" class="fix-btn">Fix the Bug</label>
+      <div class="reset-hint">(click again to relive the nightmare)</div>
+    </div>
+
+    <div class="card reveal">
+      <div class="programmer-area">
+        <div class="bed">🛏️</div>
+
+        <span class="programmer-face normal-face">😴</span>
+        <span class="programmer-face scared-face">😨</span>
+
+        <div class="single-bug" title="just one little bug how bad can it be">🐛</div>
+
+        <div class="new-bugs">
+          <span class="new-bug b1" title="hi im bug #1">🐛</span>
+          <span class="new-bug b2" title="i multiplied">🐛</span>
+          <span class="new-bug b3" title="this ones a feature actually">🐛</span>
+          <span class="new-bug b4" title="stack overflow says just restart ur pc">🐛</span>
+          <span class="new-bug b5" title="idk how i got here either">🐛</span>
+        </div>
+      </div>
+
+      <div class="achievement">🏆 Achievement Unlocked: Professional Bug Breeder (1 in, 5 out)</div>
+
+      <div class="terminal">
+        <p>&gt; git commit -m "fixed it"</p>
+        <p>&gt; Error: 5 tests failed</p>
+        <p>&gt; git commit -m "fixed it for real this time"</p>
+        <p>&gt; Error: 5 tests still failed</p>
+        <p>&gt; git commit -m "please work"<span class="cursor">&nbsp;</span></p>
+      </div>
+
+      <div class="coffee-counter">
+        <label for="cup1" class="cup-label lbl1">☕</label>
+        <label for="cup2" class="cup-label lbl2">☕</label>
+        <label for="cup3" class="cup-label lbl3">☕</label>
+        <label for="cup4" class="cup-label lbl4">☕</label>
+        <label for="cup5" class="cup-label lbl5">☕</label>
+        <label for="cup6" class="cup-label lbl6">☕</label>
+      </div>
+      <div class="caffeine-msg">⚠️ maximum caffeine reached, heart rate: yes</div>
+
+      <div class="toggle-wrap">
+        <input type="checkbox" id="featureToggle" class="toggle-box">
+        <label for="featureToggle" class="toggle-switch"></label>
+        <span class="toggle-text-bug">calling it a bug 🐛</span>
+        <span class="toggle-text-feature">actually its a feature now ✨</span>
+      </div>
+    </div>
+
+    <div class="card reveal">
+      <p style="margin-bottom: 8px; font-weight: bold;">Common Excuses (click to expand)</p>
+
+      <input type="checkbox" id="ex1" class="excuse-box">
+      <label for="ex1" class="excuse-label">"It works on my machine"</label>
+      <div class="excuse-answer">Narrator: it did not work on the machine that mattered.</div>
+
+      <input type="checkbox" id="ex2" class="excuse-box">
+      <label for="ex2" class="excuse-label">"I only changed one line"</label>
+      <div class="excuse-answer">That one line was load bearing apparently.</div>
+
+      <input type="checkbox" id="ex3" class="excuse-box">
+      <label for="ex3" class="excuse-label">"The intern probably broke it"</label>
+      <div class="excuse-answer">There is no intern. There has never been an intern.</div>
+    </div>
+
+    <div class="card summary-card reveal">
+      <div class="summary-title">Mission Complete</div>
+      <div class="summary-line">Bugs Fixed: 1</div>
+      <div class="summary-line">New Bugs Created: 5</div>
+      <div class="summary-line">Sleep Lost: 8 Hours</div>
+      <div class="summary-line">Coffee Consumed:</div>
+      <div class="summary-line">☕☕☕☕☕☕</div>
+    </div>
+
+  </div>
+
+</body>
+</html>
